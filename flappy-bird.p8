@@ -83,6 +83,37 @@ function tube_animation()
  return pipe_top.x
 	
 end
+
+function create_pipe(xpos, ypos, cant_bodys)
+	
+	--sIEMPRE SE CREA 1 UNICO TOP.
+	local top = {
+									sprite = pipe_top.sprite,
+									w = pipe_top.w,
+									h = pipe_top.h,
+									x = xpos,
+									y = ypos
+							}		
+	
+	--sIEMPRE SE CREA 1 BODY, MAX 4
+	local bodies = {}
+	
+	for i=1, cant_bodys do
+		add(bodies, {
+			sprite = pipe_body.sprite,
+			w = pipe_body.w,
+			h = pipe_body.h,
+			x = xpos,
+			y = ypos + (8*(1+i)) --vAMOS BAJANDO DE A 8 PIXELES, QUE ES LA ALTURA DEL BODY
+		})
+	end
+	
+	--aGREGAMOS LAS TUBERIAS COMPLETAS A LA LISTA DE TUBERIAS
+	add(pipes, {top = top, bodies = bodies })
+end
+
+
+
 -->8
 --init
 
@@ -135,6 +166,7 @@ function _init()
 		
 		]]
 		
+		pipes = {} --mETATABLA
 		pipe_top = {
 			--sPRITE: NRO, ALTO Y ANCHO
 			sprite = 64,
@@ -151,10 +183,12 @@ function _init()
 			w = 4,
 			h = 2,
 			
-			x = 127,
-			y = 100
+			x = 80,
+			y = 40
 		}
 		
+	
+	create_pipe(50,20,8)
 		
 	
 		
@@ -195,14 +229,32 @@ end
 -->8
 --draw
 
+function draw_pipes()
+	for pipe in all(pipes) do
+		 -- dibuja la parte superior
+   spr(pipe.top.sprite, pipe.top.x, pipe.top.y, pipe.top.w, pipe.top.h)
+        
+   -- dibuja cada segmento de la parte inferior
+   for body in all(pipe.bodies) do
+   	spr(body.sprite, body.x, body.y, body.w, body.h)
+   end
+ end
+end
+
+
+
+
+
+
 --dibujamos cosas segun lo que calculamos en update
 function _draw()
 	if game_over == false then
 
 		cls(background_color)
 		
-		spr(pipe_top.sprite, tube_animation(), 100, pipe_top.w, pipe_top.h)
-	
+		--spr(pipe_top.sprite, tube_animation(), 100, pipe_top.w, pipe_top.h)
+		draw_pipes()
+		
 		if inicio == false then
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
 			flap_animation()
