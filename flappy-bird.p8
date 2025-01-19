@@ -134,6 +134,37 @@ function create_pipe(xpos, ypos, cant_bodys)
 
 end
 
+
+function create_top_pipe(xpos, ypos, cant_bodys)
+    -- sIEMPRE SE CREA UN UNICO TOP EN LA PARTE INFERIOR
+    local tuberia_top = {
+        sprite = pipe_top_superior.sprite,
+        w = pipe_top.w,
+        h = pipe_top.h,
+        x = xpos,
+        y = ypos - pipe_top.h  -- cOLOCAMOS EL TOP ENCIMA DE LOS BODIES
+    }
+
+    local tuberia_bodies = {}
+
+    -- Colocamos los cuerpos de 8px uno encima de otro.
+    for i = 1, cant_bodys do
+        add(tuberia_bodies, {
+            sprite = pipe_body.sprite,
+            w = pipe_body.w,
+            h = pipe_body.h,
+            x = xpos,
+            y = ypos - (8 * (1+ i))  -- Movemos los cuerpos hacia arriba (restando 8px por cada cuerpo)
+        })
+    end
+
+    -- Agregamos las tuberれとas completas a la metatabla
+    add(pipes, { top = tuberia_top, bodies = tuberia_bodies })
+end
+
+
+
+
 --mUEVE LOS TUBOS 1 PX A LA IZQUIERDA, ESTO PERMITE ANIMARLOS
 function tube_animation(self)
 	self.x = self.x - 1
@@ -142,34 +173,6 @@ function tube_animation(self)
 	end
 end
 
---uTILIZADA POR _DRAW(), PERMITE 
-function draw_pipes()
-	for pipe in all(pipes) do
-	
-			--aCTUALIZAMOS LA XPOS DE TOP
-			tube_animation(pipe.top)
-	
-		 --dIBUJAMOS EL TOP
-   spr(pipe.top.sprite, 
-   				pipe.top.x, 
-   				pipe.top.y, 
-   				pipe.top.w, 
-   				pipe.top.h)
-       
-   -- dIBUJAMOS TODOS LOS BODIES
-   for body in all(pipe.bodies) do
-   	
-   	--aCTUALIZAMOS LA XPOS DE BODY 
-   	tube_animation(body)
-   	
-   	spr(body.sprite, 
-   					body.x, 
-   					body.y, 
-   					body.w, 
-   					body.h)
-   end
- end
-end
 
 
 
@@ -236,9 +239,10 @@ function _init()
 		
 		pipes = {} --mETATABLA
 		
+		--tAPA DE LA TUBERIA INFERIOR
 		pipe_top = {
 			--sPRITE: NRO, ALTO Y ANCHO
-			sprite = 64,
+			sprite = 40,
 			w = 4,
 			h = 2,
 			--uBICACION
@@ -246,9 +250,10 @@ function _init()
 			y = 20
 		}
 		
-		pipe_body = {
+		--tAPA DE LA TUBERIA SUPERIOR
+		pipe_top_superior = {
 			--sPRITE: NRO, ALTO Y ANCHO
-			sprite = 96,
+			sprite = 44,
 			w = 4,
 			h = 2,
 			
@@ -256,9 +261,16 @@ function _init()
 			y = 40
 		}
 		
-	
-				
-	
+		--cUERPO (CUALQUIER TUBERIA)
+		pipe_body = {
+			--sPRITE: NRO, ALTO Y ANCHO
+			sprite = 64,
+			w = 4,
+			h = 2,
+			
+			x = 80,
+			y = 40
+		}
 		
 		
 		--[[
@@ -297,6 +309,36 @@ end
 -->8
 --draw
 
+--uTILIZADA POR _DRAW(), PERMITE 
+function draw_pipes()
+	for pipe in all(pipes) do
+	
+			--aCTUALIZAMOS LA XPOS DE TOP
+			tube_animation(pipe.top)
+	
+		 --dIBUJAMOS EL TOP
+   spr(pipe.top.sprite, 
+   				pipe.top.x, 
+   				pipe.top.y, 
+   				pipe.top.w, 
+   				pipe.top.h)
+       
+   -- dIBUJAMOS TODOS LOS BODIES
+   for body in all(pipe.bodies) do
+   	
+   	--aCTUALIZAMOS LA XPOS DE BODY 
+   	tube_animation(body)
+   	
+   	spr(body.sprite, 
+   					body.x, 
+   					body.y, 
+   					body.w, 
+   					body.h)
+   end
+ end
+end
+
+
 --dibujamos cosas segun lo que calculamos en update
 function _draw()
 
@@ -312,15 +354,26 @@ function _draw()
 	
 		--sE TERMINA LA ANIMACION IDLE, CREAMOS LAS TUBERIAS
 		if inicio == true and crear_tuberias_flag == true then
-			create_pipe(254,100,2)
-			create_pipe(175,50,8)
+			
+			--lIMITE SUPERIOR (ESPACIO 50 PX)
+			create_pipe(175,113,7)
+			create_top_pipe(175,63,7)
+			
+			--lIMITE INFERIOR
+			create_pipe(254,52,7)
+			create_top_pipe(254,1,7)
+			
+			
 			crear_tuberias_flag = false
 		end
 	
 		if inicio == true then
+		
+			--dIBUJAMOS EL JUGADOR Y ANIMAMOS EL ALETEO CADA VEZ QUE SALTE
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
 			flap_animation_button()	
 			
+			--dIBUJAMOS LAS TUBERIAS
 			draw_pipes()
 			
 		end
@@ -360,54 +413,54 @@ ccc09999990000ccccc09999990000ccc0000999990000ccccc02222220000ccccc02222220000cc
 cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00000000000000000000000000000000cc00bb3333bbbb33bb33333333bb00cc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00000000000000000000000000000000cc00bb3333bbbb33bb33333333bb00cc
+cccccc00000ccccccccccc00000ccccccccccc00000ccccccccccc00000ccccc00bbbbbbbbbbbbbbbbbbbbbbbbbbbb0000000000000000000000000000000000
+cccc00778070cccccccc0077f070cccccccc0077f070cccccccc0077f070cccc00bbbbbbbbbbbbbbbbbbbbbbbbbbbb0000000000000000000000000000000000
+ccc0778807770cccccc077ff07770cccccc077ff07770cccccc077ff07770ccc00bb3333bbbb33333333333333bb330000bbbbbbbbbbbbbbbbbbbbbbbbbbbb00
+cc088888077070ccc0000fff077070cccc0fffff077070cccc0fffff077070cc00bb3333bbbb33333333333333bb330000bbbbbbbbbbbbbbbbbbbbbbbbbbbb00
+c0888888077070cc077770ff077070ccc0ffffff077070ccc0ffffff077070cc00bb3333bbbb33bb333333333333bb0000bb3333bbbb33333333333333bb3300
+c0888888807770cc0777770ff07770ccc00000fff07770ccc0fffffff07770cc00bb3333bbbb33bb333333333333bb0000bb3333bbbb33333333333333bb3300
+c00000888800000c0677760fff00000c0777770fff00000cc00000ffff00000c00bb3333bbbb33bb3333333333bb330000bb3333bbbb33bb333333333333bb00
+0f777f0880999990c06660fff08888800677760ff08888800677760ff088888000bb3333bbbb33bb3333333333bb330000bb3333bbbb33bb333333333333bb00
+077770880900000ccc0005550800000cc00000550800000c077770550800000c00bb3333bbbb33bb333333333333bb0000bb3333bbbb33bb3333333333bb3300
+077f08888099990ccc0555555088880ccc0555555088880c077605555088880c00bb3333bbbb33bb333333333333bb0000bb3333bbbb33bb3333333333bb3300
+c0000888880000ccccc05555550000ccccc05555550000ccc0000555550000cc0000000000000000000000000000000000bb3333bbbb33bb333333333333bb00
+cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccc0000000000000000000000000000000000bb3333bbbb33bb333333333333bb00
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00bb3333bbbb33bb33333333bb00cc00000000000000000000000000000000
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00bb3333bbbb33bb33333333bb00cc00000000000000000000000000000000
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cccccc00000ccccccccccc00000ccccccccccc00000ccccccccccc00000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cccc00778070cccccccc0077f070cccccccc0077f070cccccccc0077f070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-ccc0778807770cccccc077ff07770cccccc077ff07770cccccc077ff07770ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc088888077070ccc0000fff077070cccc0fffff077070cccc0fffff077070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c0888888077070cc077770ff077070ccc0ffffff077070ccc0ffffff077070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c0888888807770cc0777770ff07770ccc00000fff07770ccc0fffffff07770cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c00000888800000c0677760fff00000c0777770fff00000cc00000ffff00000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-0f777f0880999990c06660fff08888800677760ff08888800677760ff0888880cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-077770880900000ccc0005550800000cc00000550800000c077770550800000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-077f08888099990ccc0555555088880ccc0555555088880c077605555088880ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c0000888880000ccccc05555550000ccccc05555550000ccc0000555550000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33333333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33333333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33bb3333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33bb3333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 __map__
 3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
