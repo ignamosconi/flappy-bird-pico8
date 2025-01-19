@@ -8,23 +8,26 @@ function check_start()
 	end
 end
 
-function flap_animation_idle()
-	--aLETEOS Y DELAY DE FRAMES
-	animation_delay -= 1
-	
-	if animation_delay < 0 then
-		animation_delay = 13
-	
-		flappy_bird = animaciones_flappy[contador_animaciones]
-		contador_animaciones = contador_animaciones + 1
-		
-		if contador_animaciones > 4 then
-			contador_animaciones = 1	
-		end
-	end
-end
 
 function flap_animation()
+	-- aUMENTAMOS EL CONTADOR DE FRAMES, QUE SE EJECUTA UNA VEZ POR CADA UPDATE (A 60 FPS, EN ESTE CASO)
+ frame_counter += 1
+	
+	-- cAMBIAMOS EL SPRITE CADA n FRAMES, EN ESTE CASO
+ if frame_counter % 6 == 0 then
+	 -- mOVER AL SIGUIENTE SPRITE
+  sprite_index = (sprite_index % 4) + 1  -- alterna entre 1, 2 ... 5 (si fuese 10, pones %10)
+  flappy_bird = secuencia[sprite_index]  -- asigna el sprite a la variable
+ end
+
+ -- sI MOSTRAMOS TODOS LOS SPRITES, FRENAMOS LA ANIMACION Y REINICIAMOS LA SECUENCIA
+ if sprite_index == 4 then
+     animation_running = false 
+ end
+	
+end
+
+function flap_animation_button()
     if btn(⬆️) and not animation_running then
         animation_running = true  -- iNICIA LA ANIMACION
         frame_counter = 0  -- rEINICIAMOS EL CONTADOR DE FRAMES
@@ -33,20 +36,7 @@ function flap_animation()
 
     -- sI LA ANIMACION ESTA EN ESTADO RUNNING
     if animation_running then
-        -- aUMENTAMOS EL CONTADOR DE FRAMES, QUE SE EJECUTA UNA VEZ POR CADA UPDATE (A 60 FPS, EN ESTE CASO)
-        frame_counter += 1
-
-        -- cAMBIAMOS EL SPRITE CADA 5 FRAMES, EN ESTE CASO
-        if frame_counter % 6 == 0 then
-            -- mover al siguiente sprite
-            sprite_index = (sprite_index % 5) + 1  -- alterna entre 1, 2 ... 5 (si fuese 10, pones %10)
-            flappy_bird = secuencia[sprite_index]  -- asigna el sprite a la variable
-        end
-
-        -- sI MOSTRAMOS TODOS LOS SPRITES, FRENAMOS LA ANIMACION Y REINICIAMOS LA SECUENCIA
-        if sprite_index == 5 then
-            animation_running = false 
-        end
+       flap_animation()
     end
 end
 
@@ -121,13 +111,11 @@ function _init()
 		ypos_bird = 55
 		
 		--aNIMACION IDLE
-		flappy_bird = 0 --nro sprite inicial
-		animaciones_flappy = {0, 2, 4, 2}
-		contador_animaciones = 1
-		animation_delay = 3
+		
 		
 		-- aNIMACION FLAP
-		secuencia = {2, 4, 2, 0, 2}
+		flappy_bird = 0 --nro sprite inicial
+		secuencia = {2, 4, 2, 0} -- sprites usados en la animacion para un flap
 		frame_counter = 0
 		sprite_index = 1
 		animation_running = false
@@ -169,7 +157,6 @@ function _update60()
 	if inicio == false and game_over == false then
 		--eL PAJARO VUELA ESTATICO HASTA QUE SE PRESIONA UNA TECLA, MOMENTO EN EL CUAL LA GRAVEDAD ENTRA EN EFECTO
 		check_start()
-		flap_animation_idle()
 	end	
 	
 	
@@ -193,14 +180,14 @@ function _draw()
 	
 		if inicio == false then
 			spr(flappy_bird, xpos_bird, ypos_bird, 2, 2)
-			flap_animation_idle()
+			flap_animation()
 			
 			
 		end
 		
 		if inicio == true then
 			spr(flappy_bird, xpos_bird, ypos_bird, 2, 2)
-			flap_animation()
+			flap_animation_button()
 			
 		end
 	end
@@ -216,7 +203,7 @@ function _draw()
 	
 	--dEBUGS
 	--print("gravedad:".. gravedad .." | ypos:" .. ypos_bird)
-	print("flappy bird:" .. flappy_bird .. "| delay:" .. animation_delay .. "| c:" ..contador_animaciones)
+ --print("flappy bird:" .. flappy_bird .. "| delay:" .. animation_delay .. "| c:" .. contador_animaciones)
 end
 __gfx__
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
