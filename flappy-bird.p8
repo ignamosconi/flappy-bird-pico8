@@ -60,7 +60,7 @@ function flap_animation()
 end
 
 function flap_animation_button()
-    if btn(⬆️) and not player.animation_running then
+    if (btn(⬆️) or btn(⬇️) or btn(⬅️) or btn(➡️) or btn(❎) or btn(🅾️)) and not player.animation_running then
         player.animation_running = true  -- iNICIA LA ANIMACION
         frame_counter = 0  -- rEINICIAMOS LOS CONTADORES
         sprite_index = 1  
