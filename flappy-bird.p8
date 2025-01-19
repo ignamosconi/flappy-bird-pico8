@@ -2,10 +2,42 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 --flappy bird funcions
+
 function check_start()
-	if btn(⬆️) then
+
+	--cHEQUEAMOS EL INICIO
+	if btn(⬆️) or btn(⬇️) or btn(❎) or btn(🅾️) then
 		inicio = true
 	end
+	
+	--cAMBIO DE SKINS HACIA LA DER
+	if btnp(➡️) then
+	
+		selector_animacion += 1
+		
+		
+		if selector_animacion > 4 then
+			selector_animacion = 1
+		end
+		
+		player.sprites_animacion = animations[selector_animacion]
+	end
+	
+	--cAMBIO DE SKINS HACIA LA IZQ
+	if btnp(⬅️) then
+		selector_animacion -= 1
+		
+		
+		if selector_animacion < 1 then
+			selector_animacion = 4
+		end
+		
+		player.sprites_animacion = animations[selector_animacion]
+	end
+
+	
+	
+	
 end
 
 
@@ -60,7 +92,7 @@ end
 
 function volar()
 	--sALTO PRESIONADO? lA VARIABLE EXTRA "ALETEAR_PRESIONADO" PERMITE QUE NO SE SPAMEE EL BOTON	
-	if btn(⬆️) then
+	if btn(⬆️) or btn(⬇️) or btn(⬅️) or btn(➡️) or btn(❎) or btn(🅾️) then
 		if player.aletear_presionado == false then
 			gravedad = -2.2
 			player.aletear_presionado = true
@@ -87,7 +119,7 @@ end
 function create_pipe(xpos, ypos, cant_bodys)
 	
 	--sIEMPRE SE CREA 1 UNICO TOP.
-	local top = {
+	local tuberia_top = {
 									sprite = pipe_top.sprite,
 									w = pipe_top.w,
 									h = pipe_top.h,
@@ -96,10 +128,10 @@ function create_pipe(xpos, ypos, cant_bodys)
 							}		
 	
 	--sIEMPRE SE CREA 1 BODY, MAX 4
-	local bodies = {}
+	local tuberia_bodies = {}
 	
 	for i=1, cant_bodys do
-		add(bodies, {
+		add(tuberia_bodies, {
 			sprite = pipe_body.sprite,
 			w = pipe_body.w,
 			h = pipe_body.h,
@@ -108,8 +140,9 @@ function create_pipe(xpos, ypos, cant_bodys)
 		})
 	end
 	
-	--aGREGAMOS LAS TUBERIAS COMPLETAS A LA LISTA DE TUBERIAS
-	add(pipes, {top = top, bodies = bodies })
+	--aGREGAMOS LAS TUBERIAS COMPLETAS A LA METATABLA
+	add(pipes, {top = tuberia_top, bodies = tuberia_bodies })
+
 end
 
 
@@ -137,6 +170,14 @@ function _init()
 		
 		]]
 		
+		selector_animacion = 1
+		animations = {
+			{2, 4, 2, 0},					--1 / aMARILLO
+			{8, 10, 8, 6},				--2 / rOSA
+			{14, 32, 14, 12}, --3 / rOJO
+			{36, 38, 36, 34}		--4 / gRIS
+		}
+				
 		player = {
 			--pOSICION SPRITE
 			xpos = 30,
@@ -144,7 +185,7 @@ function _init()
 			
 			-- aNIMACION FLAP
 			sprite_actual = 0, --sprite actual
-			sprites_animacion = {2, 4, 2, 0}, -- secuencia de sprites usados en la animacion para un flap
+			sprites_animacion = animations[selector_animacion] , -- secuencia de sprites usados en la animacion para un flap
 			animation_running = false,
 			
 			--gAMEPLAY
@@ -167,6 +208,7 @@ function _init()
 		]]
 		
 		pipes = {} --mETATABLA
+		
 		pipe_top = {
 			--sPRITE: NRO, ALTO Y ANCHO
 			sprite = 64,
@@ -189,7 +231,7 @@ function _init()
 		
 	
 	create_pipe(50,20,8)
-		
+	create_pipe(90,20,8)		
 	
 		
 		
@@ -251,7 +293,6 @@ function _draw()
 	if game_over == false then
 
 		cls(background_color)
-		
 		--spr(pipe_top.sprite, tube_animation(), 100, pipe_top.w, pipe_top.h)
 		draw_pipes()
 		
@@ -304,14 +345,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccc00000ccccccccccc00000ccccccccccc00000ccccccccccc00000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccc00778070cccccccc0077f070cccccccc0077f070cccccccc0077f070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccc0778807770cccccc077ff07770cccccc077ff07770cccccc077ff07770ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc088888077070ccc0000fff077070ccc0000fff077070ccc0000fff077070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c0888888077070cc077770ff077070cc077770ff077070cc077770ff077070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c0888888807770cc0777770ff07770cc0777770ff07770cc0777770ff07770cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c00000888800000c0677760fff00000c0677760fff00000c0f777f0fff00000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-0f777f0880999990c06660fff0888880c06660fff0888880c0fff0fff0888880cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-077770880900000ccc0005550800000ccc0005550800000ccc0005550800000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-077f08888099990ccc0555555088880ccc0555555088880ccc0555555088880ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c0000888880000ccccc05555550000ccccc05555550000ccccc05555550000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc088888077070ccc0000fff077070cccc0fffff077070cccc0fffff077070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c0888888077070cc077770ff077070ccc0ffffff077070ccc0ffffff077070cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c0888888807770cc0777770ff07770ccc00000fff07770ccc0fffffff07770cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c00000888800000c0677760fff00000c0777770fff00000cc00000ffff00000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+0f777f0880999990c06660fff08888800677760ff08888800677760ff0888880cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+077770880900000ccc0005550800000cc00000550800000c077770550800000ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+077f08888099990ccc0555555088880ccc0555555088880c077605555088880ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c0000888880000ccccc05555550000ccccc05555550000ccc0000555550000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
