@@ -74,13 +74,13 @@ end
 
 function tube_animation()
 	
-	xpos_tapa_abj -= 1
+	pipe_top.x -= 1
 	
-	if xpos_tapa_abj < -35 then
-		xpos_tapa_abj = 127
+	if pipe_top.x < -35 then
+		pipe_top.x = 127
 	end
 	
- return xpos_tapa_abj
+ return pipe_top.x
 	
 end
 -->8
@@ -102,13 +102,11 @@ function _init()
 		
 		--[[ 
 		
-		sprites flappy bird
+		jugador - flappy bird
 		
 		]]
 		
-		
 		player = {
-		
 			--pOSICION SPRITE
 			xpos = 30,
 			ypos = 55,
@@ -123,13 +121,40 @@ function _init()
 			
 		}
 		
+		--variables aux jugador
+		gravedad = 0
+	
+		frame_counter = 0
+		sprite_index = 1
 		
 	
 		
-		--[[ 
-		sprites tuberias
+		--[[
+		 
+		tuberias
+		
 		]]
-		contador_tubo = 0
+		
+		pipe_top = {
+			--sPRITE: NRO, ALTO Y ANCHO
+			sprite = 64,
+			w = 4,
+			h = 2,
+			--uBICACION
+			x = 60,
+			y = 20
+		}
+		
+		pipe_body = {
+			--sPRITE: NRO, ALTO Y ANCHO
+			sprite = 96,
+			w = 4,
+			h = 2,
+			
+			x = 127,
+			y = 100
+		}
+		
 		
 		
 		xpos_tubo_arr = 60
@@ -145,16 +170,15 @@ function _init()
 		
 		
 		--[[
-		variables
+		
+		other variables
+		
 		]]
 		
 		inicio = false
 		game_over = false
 	
-		gravedad = 0
-	
-		frame_counter = 0
-		sprite_index = 1
+		
 		
 	
 		
@@ -187,7 +211,7 @@ function _draw()
 
 		cls(background_color)
 		
-		spr(64, tube_animation(), 100, 4,4)
+		spr(pipe_top.sprite, tube_animation(), 100, pipe_top.w, pipe_top.h)
 	
 		if inicio == false then
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
