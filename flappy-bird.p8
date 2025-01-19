@@ -104,18 +104,7 @@ end
 -->8
 -- pipes functions
 
-function tube_animation()
-	
-	pipe_top.x -= 1
-	
-	if pipe_top.x < -35 then
-		pipe_top.x = 127
-	end
-	
- return pipe_top.x
-	
-end
-
+--cREA UNA TUBERIA COMPLETA EN UNA POSICION X E Y. eL PARAMETRO CANT_BODYS ESPECIFICA CUANTOS BODIES DE 8PX HABRAN DEBAJO DEL TOP
 function create_pipe(xpos, ypos, cant_bodys)
 	
 	--sIEMPRE SE CREA 1 UNICO TOP.
@@ -143,6 +132,43 @@ function create_pipe(xpos, ypos, cant_bodys)
 	--aGREGAMOS LAS TUBERIAS COMPLETAS A LA METATABLA
 	add(pipes, {top = tuberia_top, bodies = tuberia_bodies })
 
+end
+
+--mUEVE LOS TUBOS 1 PX A LA IZQUIERDA, ESTO PERMITE ANIMARLOS
+function tube_animation(self)
+	self.x = self.x - 1
+	if self.x < -35 then
+		self.x = 127
+	end
+end
+
+--uTILIZADA POR _DRAW(), PERMITE 
+function draw_pipes()
+	for pipe in all(pipes) do
+	
+			--aCTUALIZAMOS LA XPOS DE TOP
+			tube_animation(pipe.top)
+	
+		 --dIBUJAMOS EL TOP
+   spr(pipe.top.sprite, 
+   				pipe.top.x, 
+   				pipe.top.y, 
+   				pipe.top.w, 
+   				pipe.top.h)
+       
+   -- dIBUJAMOS TODOS LOS BODIES
+   for body in all(pipe.bodies) do
+   	
+   	--aCTUALIZAMOS LA XPOS DE BODY 
+   	tube_animation(body)
+   	
+   	spr(body.sprite, 
+   					body.x, 
+   					body.y, 
+   					body.w, 
+   					body.h)
+   end
+ end
 end
 
 
@@ -199,6 +225,7 @@ function _init()
 		frame_counter = 0
 		sprite_index = 1
 		
+		crear_tuberias_flag = true
 	
 		
 		--[[
@@ -230,8 +257,7 @@ function _init()
 		}
 		
 	
-	create_pipe(50,20,8)
-	create_pipe(90,20,8)		
+				
 	
 		
 		
@@ -259,7 +285,7 @@ function _update60()
 		--eL PAJARO VUELA ESTATICO HASTA QUE SE PRESIONA UNA TECLA, MOMENTO EN EL CUAL LA GRAVEDAD ENTRA EN EFECTO
 		check_start()
 	end	
-	
+
 	
 	if inicio == true and game_over == false then
 		gravedad_flappy()
@@ -271,48 +297,42 @@ end
 -->8
 --draw
 
-function draw_pipes()
-	for pipe in all(pipes) do
-		 -- dibuja la parte superior
-   spr(pipe.top.sprite, pipe.top.x, pipe.top.y, pipe.top.w, pipe.top.h)
-        
-   -- dibuja cada segmento de la parte inferior
-   for body in all(pipe.bodies) do
-   	spr(body.sprite, body.x, body.y, body.w, body.h)
-   end
- end
-end
-
-
-
-
-
-
 --dibujamos cosas segun lo que calculamos en update
 function _draw()
+
 	if game_over == false then
 
 		cls(background_color)
-		--spr(pipe_top.sprite, tube_animation(), 100, pipe_top.w, pipe_top.h)
-		draw_pipes()
 		
+		--aNIMACION IDLE
 		if inicio == false then
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
-			flap_animation()
-			
-			
+			flap_animation()	
 		end
-		
+	
+		--sE TERMINA LA ANIMACION IDLE, CREAMOS LAS TUBERIAS
+		if inicio == true and crear_tuberias_flag == true then
+			create_pipe(254,100,2)
+			create_pipe(175,50,8)
+			crear_tuberias_flag = false
+		end
+	
 		if inicio == true then
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
-			flap_animation_button()
+			flap_animation_button()	
+			
+			draw_pipes()
 			
 		end
+		
 	end
 		
+		
 	if inicio == true and game_over == true then
-		print("g a m e  o v e r")
-		stop()
+		
+		--lOGICA PARA TERMINAR LA PARTIDA
+		--print("g a m e  o v e r")
+		--stop()
 	end
 		
 	
