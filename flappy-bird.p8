@@ -30,8 +30,8 @@ end
 function flap_animation_button()
     if btn(⬆️) and not player.animation_running then
         player.animation_running = true  -- iNICIA LA ANIMACION
-        frame_counter = 0  -- rEINICIAMOS EL CONTADOR DE FRAMES
-        sprite_index = 1  -- cOMIENZA EN EL INDICE 1 DE LA SECUENCIA DE SPRITES (VER INIT)
+        frame_counter = 0  -- rEINICIAMOS LOS CONTADORES
+        sprite_index = 1  
     end
 
     -- sI LA ANIMACION ESTA EN ESTADO RUNNING
@@ -156,17 +156,7 @@ function _init()
 		}
 		
 		
-		
-		xpos_tubo_arr = 60
-		ypos_tubo_arr = 20
-		xpos_tapa_arr = 60
-		ypos_tapa_arr = 20
-		
-		xpos_tapa_abj = 127
-		ypos_tapa_abj = 100
-		xpos_tapa_arr = 60
-		ypos_tapa_arr = 110
-		
+	
 		
 		
 		--[[
@@ -237,8 +227,8 @@ function _draw()
 	
 	
 	--dEBUGS
-	print("gravedad:".. gravedad .." | ypos:" .. player.ypos)
- print("player sprite:" .. player.sprite_actual)
+	--print("gravedad:".. gravedad .." | ypos:" .. player.ypos)
+ --print("player sprite:" .. player.sprite_actual)
 end
 __gfx__
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
