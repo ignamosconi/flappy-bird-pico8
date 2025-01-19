@@ -17,25 +17,25 @@ function flap_animation()
  if frame_counter % 6 == 0 then
 	 -- mOVER AL SIGUIENTE SPRITE
   sprite_index = (sprite_index % 4) + 1  -- alterna entre 1, 2 ... 5 (si fuese 10, pones %10)
-  flappy_bird = secuencia[sprite_index]  -- asigna el sprite a la variable
+  player.sprite_actual = player.sprites_animacion[sprite_index]  -- asigna el sprite a la variable
  end
 
  -- sI MOSTRAMOS TODOS LOS SPRITES, FRENAMOS LA ANIMACION Y REINICIAMOS LA SECUENCIA
  if sprite_index == 4 then
-     animation_running = false 
+     player.animation_running = false 
  end
 	
 end
 
 function flap_animation_button()
-    if btn(⬆️) and not animation_running then
-        animation_running = true  -- iNICIA LA ANIMACION
+    if btn(⬆️) and not player.animation_running then
+        player.animation_running = true  -- iNICIA LA ANIMACION
         frame_counter = 0  -- rEINICIAMOS EL CONTADOR DE FRAMES
         sprite_index = 1  -- cOMIENZA EN EL INDICE 1 DE LA SECUENCIA DE SPRITES (VER INIT)
     end
 
     -- sI LA ANIMACION ESTA EN ESTADO RUNNING
-    if animation_running then
+    if player.animation_running then
        flap_animation()
     end
 end
@@ -44,16 +44,16 @@ end
 
 function gravedad_flappy()
 	--mODIFICAMOS LA GRAVEDAD
-	if ypos_bird < 114 then
-		ypos_bird = ypos_bird + gravedad
+	if player.ypos < 114 then
+		player.ypos = player.ypos + gravedad
 		gravedad = gravedad + 0.15
 	else
-		ypos_bird = 114
+		player.ypos = 114
 		game_over = true
 	end
 	
-	if ypos_bird < -25 then
-		ypos_bird = -24
+	if player.ypos < -25 then
+		player.ypos = -24
 	end
 	
 end
@@ -61,12 +61,12 @@ end
 function volar()
 	--sALTO PRESIONADO? lA VARIABLE EXTRA "ALETEAR_PRESIONADO" PERMITE QUE NO SE SPAMEE EL BOTON	
 	if btn(⬆️) then
-		if aletear_presionado == false then
+		if player.aletear_presionado == false then
 			gravedad = -2.2
-			aletear_presionado = true
+			player.aletear_presionado = true
 		end
 	else
-		aletear_presionado = false
+		player.aletear_presionado = false
 	end
 end
 -->8
@@ -106,19 +106,25 @@ function _init()
 		
 		]]
 		
-		--pOSICION SPRITE
-		xpos_bird = 30
-		ypos_bird = 55
 		
-		--aNIMACION IDLE
+		player = {
+		
+			--pOSICION SPRITE
+			xpos = 30,
+			ypos = 55,
+			
+			-- aNIMACION FLAP
+			sprite_actual = 0, --sprite actual
+			sprites_animacion = {2, 4, 2, 0}, -- secuencia de sprites usados en la animacion para un flap
+			animation_running = false,
+			
+			--gAMEPLAY
+			aletear_presionado = false
+			
+		}
 		
 		
-		-- aNIMACION FLAP
-		flappy_bird = 0 --nro sprite inicial
-		secuencia = {2, 4, 2, 0} -- sprites usados en la animacion para un flap
-		frame_counter = 0
-		sprite_index = 1
-		animation_running = false
+	
 		
 		--[[ 
 		sprites tuberias
@@ -144,9 +150,14 @@ function _init()
 		
 		inicio = false
 		game_over = false
-		aletear_presionado = false
-		
+	
 		gravedad = 0
+	
+		frame_counter = 0
+		sprite_index = 1
+		
+	
+		
 end
 -->8
 --update60
@@ -179,14 +190,14 @@ function _draw()
 		spr(64, tube_animation(), 100, 4,4)
 	
 		if inicio == false then
-			spr(flappy_bird, xpos_bird, ypos_bird, 2, 2)
+			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
 			flap_animation()
 			
 			
 		end
 		
 		if inicio == true then
-			spr(flappy_bird, xpos_bird, ypos_bird, 2, 2)
+			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
 			flap_animation_button()
 			
 		end
@@ -202,8 +213,8 @@ function _draw()
 	
 	
 	--dEBUGS
-	--print("gravedad:".. gravedad .." | ypos:" .. ypos_bird)
- --print("flappy bird:" .. flappy_bird .. "| delay:" .. animation_delay .. "| c:" .. contador_animaciones)
+	print("gravedad:".. gravedad .." | ypos:" .. player.ypos)
+ print("player sprite:" .. player.sprite_actual)
 end
 __gfx__
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
