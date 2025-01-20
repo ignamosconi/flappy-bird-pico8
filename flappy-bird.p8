@@ -104,7 +104,11 @@ end
 -->8
 -- pipes functions
 
---cREA UNA TUBERIA COMPLETA EN UNA POSICION X E Y. eL PARAMETRO CANT_BODYS ESPECIFICA CUANTOS BODIES DE 8PX HABRAN DEBAJO DEL TOP
+--cREA UNA TUBERIA COMPLETA EN
+--UNA POSICION X E Y. eL PARAM
+--CANT_BODYS ESPECIFICA CUANTOS
+--BODIES DE 8PX HABRAN DEBAJO 
+--DEL TOP
 function create_pipe(xpos, ypos, cant_bodys)
 	
 	--sIEMPRE SE CREA 1 UNICO TOP.
@@ -170,10 +174,16 @@ function tube_animation(self)
 	self.x = self.x - 1
 	if self.x < -35 then
 		self.x = 127
+		--del(pipes, self) 
 	end
 end
 
 
+--eLEGIMOS UN NRO RANDOM PARA LA TUBERIA SUPERIOR
+function random_number(minimo, maximo)
+	num = flr(rnd(max - min + 1) + min)
+	return num
+end
 
 
 -->8
@@ -246,8 +256,8 @@ function _init()
 			w = 4,
 			h = 2,
 			--uBICACION
-			x = 60,
-			y = 20
+			x = 0,
+			y = 0
 		}
 		
 		--tAPA DE LA TUBERIA SUPERIOR
@@ -257,8 +267,8 @@ function _init()
 			w = 4,
 			h = 2,
 			
-			x = 80,
-			y = 40
+			x = 0,
+			y = 0
 		}
 		
 		--cUERPO (CUALQUIER TUBERIA)
@@ -363,7 +373,7 @@ function _draw()
 			create_pipe(254,52,7)
 			create_top_pipe(254,1,7)
 			
-			
+			--eSTE IF ES solo para el inicio. nO LO PONEMOS EN INIT PORQUE TENEMOS QUE ESPERAR A QUE EL JUGADOR DE INICIO A LA PARTIDA
 			crear_tuberias_flag = false
 		end
 	
