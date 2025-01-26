@@ -104,85 +104,326 @@ end
 -->8
 -- pipes functions
 
---cREA UNA TUBERIA COMPLETA EN
---UNA POSICION X E Y. eL PARAM
---CANT_BODYS ESPECIFICA CUANTOS
---BODIES DE 8PX HABRAN DEBAJO 
---DEL TOP
-function create_pipe(xpos, ypos, cant_bodys)
-	
-	--sIEMPRE SE CREA 1 UNICO TOP.
-	local tuberia_top = {
-									sprite = pipe_top.sprite,
-									w = pipe_top.w,
-									h = pipe_top.h,
-									x = xpos,
-									y = ypos
-							}		
-	
-	--sIEMPRE SE CREA 1 BODY, MAX 4
-	local tuberia_bodies = {}
-	
-	for i=1, cant_bodys do
-		add(tuberia_bodies, {
-			sprite = pipe_body.sprite,
-			w = pipe_body.w,
-			h = pipe_body.h,
-			x = xpos,
-			y = ypos + (8*(1+i)) --vAMOS BAJANDO DE A 8 PIXELES, QUE ES LA ALTURA DEL BODY
-		})
-	end
-	
-	--aGREGAMOS LAS TUBERIAS COMPLETAS A LA METATABLA
-	add(pipes, {top = tuberia_top, bodies = tuberia_bodies })
-
-end
-
-
-function create_top_pipe(xpos, ypos, cant_bodys)
-    -- sIEMPRE SE CREA UN UNICO TOP EN LA PARTE INFERIOR
-    local tuberia_top = {
-        sprite = pipe_top_superior.sprite,
-        w = pipe_top.w,
-        h = pipe_top.h,
-        x = xpos,
-        y = ypos - pipe_top.h  -- cOLOCAMOS EL TOP ENCIMA DE LOS BODIES
-    }
-
-    local tuberia_bodies = {}
-
-    -- Colocamos los cuerpos de 8px uno encima de otro.
-    for i = 1, cant_bodys do
-        add(tuberia_bodies, {
-            sprite = pipe_body.sprite,
-            w = pipe_body.w,
-            h = pipe_body.h,
-            x = xpos,
-            y = ypos - (8 * (1+ i))  -- Movemos los cuerpos hacia arriba (restando 8px por cada cuerpo)
-        })
-    end
-
-    -- Agregamos las tuberれとas completas a la metatabla
-    add(pipes, { top = tuberia_top, bodies = tuberia_bodies })
-end
-
-
-
-
---mUEVE LOS TUBOS 1 PX A LA IZQUIERDA, ESTO PERMITE ANIMARLOS
-function tube_animation(self)
-	self.x = self.x - 1
-	if self.x < -35 then
-		self.x = 127
-		--del(pipes, self) 
-	end
-end
-
-
 --eLEGIMOS UN NRO RANDOM PARA LA TUBERIA SUPERIOR
 function random_number(minimo, maximo)
 	num = flr(rnd(max - min + 1) + min)
 	return num
+end
+
+function move_top_pipe(pipe)
+	
+	--mOVEMOS LA TAPA
+	pipe.top.lid.x -= 1
+	
+	--mOVEMOS LOS BODYS
+	for i = 1, 4 do
+		--sUBCADENA PARA LAS PART1, PART2, ETC
+		p_top = pipe.top.body["part"..i]
+		
+		--cICLAMOS CON AYUDA DE LA STR
+		p_top.x -= 1
+	end
+	
+	
+	--lOOPEAMOS LAS TUBERIAS
+	if pipe.top.lid.x < -35 then
+		pipe.top.lid.x = 127
+		
+			--mOVEMOS LOS BODYS
+		for i = 1, 4 do
+			--sUBCADENA PARA LAS PART1, PART2, ETC
+			p_top = pipe.top.body["part"..i]
+			
+			--cICLAMOS CON AYUDA DE LA STR
+			p_top.x = 127
+		end
+	end
+end
+
+function move_bottom_pipe(pipe)
+	
+	--mOVEMOS LA TAPA
+	pipe.bottom.lid.x -= 1
+	
+	--mOVEMOS LOS BODYS
+	for i = 1, 4 do
+		--sUBCADENA PARA LAS PART1, PART2, ETC
+		p_bottom = pipe.bottom.body["part"..i]
+		
+		--cICLAMOS CON AYUDA DE LA STR
+		p_bottom.x -= 1
+	end
+	
+	
+	--LOOPEAMOS LAS TUBERIAS
+	if pipe.bottom.lid.x < -35 then
+		pipe.bottom.lid.x = 127
+		
+			--mOVEMOS LOS BODYS
+		for i = 1, 4 do
+			--sUBCADENA PARA LAS PART1, PART2, ETC
+			p_bottom = pipe.bottom.body["part"..i]
+			
+			--cICLAMOS CON AYUDA DE LA STR
+			p_bottom.x = 127
+		end
+	end
+end
+
+
+
+function init_pipes()
+
+	--tUBERIA COMPLETA 1 
+		pipe1 = {
+		
+			--eSPACIO ENTRE LAS MITADES
+			space = 50,
+			
+			--mITAD SUPERIOR COMPLETA
+			top = {
+				
+					lid = {
+						sprite = 40,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 64,
+						mirror = false,
+						flp = true
+					},
+					
+				body = {
+					part1 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 48,
+						mirror = false,
+						flp = true
+					},
+					
+					part2 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 32,
+						mirror = false,
+						flp = true
+					},
+					
+					part3 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 16,
+						mirror = false,
+						flp = true
+					},
+					
+					part4 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 0,
+						mirror = false,
+						flp = true
+					},
+				},
+			},
+			
+			
+			--mITAD INFERIOR
+			bottom = {
+				
+					lid = {
+						sprite = 40,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 112,
+						mirror = false,
+						flp = false
+					},
+				
+				body = {
+					part1 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 128,
+						mirror = false,
+						flp = false
+					},
+					
+					part2 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 144,
+						mirror = false,
+						flp = false
+					},
+					
+					part3 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 160,
+						mirror = false,
+						flp = false
+					},
+					
+					part4 = {
+						sprite = 44,
+						w = 4,
+						h = 2,
+						x = 175,
+						y = 176,
+						mirror = false,
+						flp = false
+					},
+				
+				},				
+				
+				
+			}
+		}
+		
+		
+		--tUBERIA COMPLETA 2 
+		pipe2 = {
+		
+			--eSPACIO ENTRE LAS MITADES
+			space = 50,
+			
+			--mITAD SUPERIOR COMPLETA
+			top = {
+				
+					lid = {
+						sprite = 40,
+						w = 4,
+						h = 2,
+						x = 254,
+						y = 0,
+						mirror = false,
+						flp = true
+					},
+					
+					body = {
+					
+						part1 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = -16,
+							mirror = false,
+							flp = true
+						},
+				
+						part2 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = -32,
+							mirror = false,
+							flp = true
+						},
+						
+						part3 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = -48,
+							mirror = false,
+							flp = true
+						},
+						
+						part4 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = -64,
+							mirror = false,
+							flp = true
+						},
+					},
+			},
+			
+			
+			--mITAD INFERIOR
+			bottom = {
+				
+					lid = {
+						sprite = 40,
+						w = 4,
+						h = 2,
+						x = 254,
+						y = 50,
+						mirror = false,
+						flp = false
+					},
+					
+					body = {
+					
+						part1 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = 66,
+							mirror = false,
+							flp = false
+						},
+						
+						part2 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = 82,
+							mirror = false,
+							flp = false
+						},
+						
+						part3 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = 98,
+							mirror = false,
+							flp = false
+						},
+						
+						part4 = {
+							sprite = 44,
+							w = 4,
+							h = 2,
+							x = 254,
+							y = 114,
+							mirror = false,
+							flp = false
+						},
+						
+					}
+					
+				}
+				
+
+		}
+		
 end
 
 
@@ -237,52 +478,17 @@ function _init()
 	
 		frame_counter = 0
 		sprite_index = 1
-		
-		crear_tuberias_flag = true
 	
 		
 		--[[
 		 
 		tuberias
 		
-		]]
-		
-		pipes = {} --mETATABLA
-		
-		--tAPA DE LA TUBERIA INFERIOR
-		pipe_top = {
-			--sPRITE: NRO, ALTO Y ANCHO
-			sprite = 40,
-			w = 4,
-			h = 2,
-			--uBICACION
-			x = 0,
-			y = 0
-		}
-		
-		--tAPA DE LA TUBERIA SUPERIOR
-		pipe_top_superior = {
-			--sPRITE: NRO, ALTO Y ANCHO
-			sprite = 44,
-			w = 4,
-			h = 2,
-			
-			x = 0,
-			y = 0
-		}
-		
-		--cUERPO (CUALQUIER TUBERIA)
-		pipe_body = {
-			--sPRITE: NRO, ALTO Y ANCHO
-			sprite = 64,
-			w = 4,
-			h = 2,
-			
-			x = 80,
-			y = 40
-		}
+		]]	
+		init_pipes()
 		
 		
+
 		--[[
 		
 		other variables
@@ -319,34 +525,61 @@ end
 -->8
 --draw
 
---uTILIZADA POR _DRAW(), PERMITE 
-function draw_pipes()
-	for pipe in all(pipes) do
+function draw_pipe(pipe)
+
+
+	--top pipe
+	move_top_pipe(pipe)
 	
-			--aCTUALIZAMOS LA XPOS DE TOP
-			tube_animation(pipe.top)
+	spr(pipe.top.lid.sprite, 
+					pipe.top.lid.x,
+					pipe.top.lid.y, 
+					pipe.top.lid.w, 
+					pipe.top.lid.h, 
+					pipe.top.lid.mirror, 
+					pipe.top.lid.flp
+					)
+					
+	for i = 1, 4 do
+		--sUBCADENA PARA LAS PART1, PART2, ETC
+		p_top = pipe.top.body["part"..i]
+		
+		--cICLAMOS CON AYUDA DE LA STR
+		spr(p_top.sprite,
+						p_top.x,
+						p_top.y,
+						p_top.w,
+						p_top.h,
+						p_top.mirror,
+						p_top.flp)
+	end				
 	
-		 --dIBUJAMOS EL TOP
-   spr(pipe.top.sprite, 
-   				pipe.top.x, 
-   				pipe.top.y, 
-   				pipe.top.w, 
-   				pipe.top.h)
-       
-   -- dIBUJAMOS TODOS LOS BODIES
-   for body in all(pipe.bodies) do
-   	
-   	--aCTUALIZAMOS LA XPOS DE BODY 
-   	tube_animation(body)
-   	
-   	spr(body.sprite, 
-   					body.x, 
-   					body.y, 
-   					body.w, 
-   					body.h)
-   end
- end
+	
+	--bottom pipe
+	
+	move_bottom_pipe(pipe)
+	
+		spr(pipe.bottom.lid.sprite, 
+					pipe.bottom.lid.x,
+					pipe.bottom.lid.y, 
+					pipe.bottom.lid.w, 
+					pipe.bottom.lid.h, 
+					pipe.bottom.lid.mirror, 
+					pipe.bottom.lid.flp)		
+	
+		for i = 1, 4 do
+		--sUBCADENA PARA LAS PART1, PART2, ETC
+		p_bottom = pipe.bottom.body["part"..i]
+			spr(p_bottom.sprite,
+							p_bottom.x,
+							p_bottom.y,
+							p_bottom.w,
+							p_bottom.h,
+							p_bottom.mirror,
+							p_bottom.flp)
+		end
 end
+
 
 
 --dibujamos cosas segun lo que calculamos en update
@@ -361,21 +594,7 @@ function _draw()
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
 			flap_animation()	
 		end
-	
-		--sE TERMINA LA ANIMACION IDLE, CREAMOS LAS TUBERIAS
-		if inicio == true and crear_tuberias_flag == true then
-			
-			--lIMITE SUPERIOR (ESPACIO 50 PX)
-			create_pipe(175,113,7)
-			create_top_pipe(175,63,7)
-			
-			--lIMITE INFERIOR
-			create_pipe(254,52,7)
-			create_top_pipe(254,1,7)
-			
-			--eSTE IF ES solo para el inicio. nO LO PONEMOS EN INIT PORQUE TENEMOS QUE ESPERAR A QUE EL JUGADOR DE INICIO A LA PARTIDA
-			crear_tuberias_flag = false
-		end
+		
 	
 		if inicio == true then
 		
@@ -384,9 +603,12 @@ function _draw()
 			flap_animation_button()	
 			
 			--dIBUJAMOS LAS TUBERIAS
-			draw_pipes()
+			draw_pipe(pipe1)
+			draw_pipe(pipe2)
+			
 			
 		end
+		
 		
 	end
 		
@@ -423,38 +645,38 @@ ccc09999990000ccccc09999990000ccc0000999990000ccccc02222220000ccccc02222220000cc
 cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00000000000000000000000000000000cc00bb3333bbbb33bb33333333bb00cc
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00000000000000000000000000000000cc00bb3333bbbb33bb33333333bb00cc
-cccccc00000ccccccccccc00000ccccccccccc00000ccccccccccc00000ccccc00bbbbbbbbbbbbbbbbbbbbbbbbbbbb0000000000000000000000000000000000
-cccc00778070cccccccc0077f070cccccccc0077f070cccccccc0077f070cccc00bbbbbbbbbbbbbbbbbbbbbbbbbbbb0000000000000000000000000000000000
-ccc0778807770cccccc077ff07770cccccc077ff07770cccccc077ff07770ccc00bb3333bbbb33333333333333bb330000bbbbbbbbbbbbbbbbbbbbbbbbbbbb00
-cc088888077070ccc0000fff077070cccc0fffff077070cccc0fffff077070cc00bb3333bbbb33333333333333bb330000bbbbbbbbbbbbbbbbbbbbbbbbbbbb00
-c0888888077070cc077770ff077070ccc0ffffff077070ccc0ffffff077070cc00bb3333bbbb33bb333333333333bb0000bb3333bbbb33333333333333bb3300
-c0888888807770cc0777770ff07770ccc00000fff07770ccc0fffffff07770cc00bb3333bbbb33bb333333333333bb0000bb3333bbbb33333333333333bb3300
-c00000888800000c0677760fff00000c0777770fff00000cc00000ffff00000c00bb3333bbbb33bb3333333333bb330000bb3333bbbb33bb333333333333bb00
-0f777f0880999990c06660fff08888800677760ff08888800677760ff088888000bb3333bbbb33bb3333333333bb330000bb3333bbbb33bb333333333333bb00
-077770880900000ccc0005550800000cc00000550800000c077770550800000c00bb3333bbbb33bb333333333333bb0000bb3333bbbb33bb3333333333bb3300
-077f08888099990ccc0555555088880ccc0555555088880c077605555088880c00bb3333bbbb33bb333333333333bb0000bb3333bbbb33bb3333333333bb3300
-c0000888880000ccccc05555550000ccccc05555550000ccc0000555550000cc0000000000000000000000000000000000bb3333bbbb33bb333333333333bb00
-cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccc0000000000000000000000000000000000bb3333bbbb33bb333333333333bb00
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00bb3333bbbb33bb33333333bb00cc00000000000000000000000000000000
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00bb3333bbbb33bb33333333bb00cc00000000000000000000000000000000
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00000000000000000000000000000000cc00bb3333bbbb33bb333333bb3300cc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00000000000000000000000000000000cc00bb3333bbbb33bb333333bb3300cc
+cccccc00000ccccccccccc00000ccccccccccc00000ccccccccccc00000ccccc00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00cc00bb3333bbbb33bb33333333bb00cc
+cccc00778070cccccccc0077f070cccccccc0077f070cccccccc0077f070cccc00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00cc00bb3333bbbb33bb33333333bb00cc
+ccc0778807770cccccc077ff07770cccccc077ff07770cccccc077ff07770ccc00bb3333bbbb33333333333333bb3300cc00bb3333bbbb33bb333333bb3300cc
+cc088888077070ccc0000fff077070cccc0fffff077070cccc0fffff077070cc00bb3333bbbb33333333333333bb3300cc00bb3333bbbb33bb333333bb3300cc
+c0888888077070cc077770ff077070ccc0ffffff077070ccc0ffffff077070cc00bb3333bbbb33bb333333333333bb00cc00bb3333bbbb33bb33333333bb00cc
+c0888888807770cc0777770ff07770ccc00000fff07770ccc0fffffff07770cc00bb3333bbbb33bb333333333333bb00cc00bb3333bbbb33bb33333333bb00cc
+c00000888800000c0677760fff00000c0777770fff00000cc00000ffff00000c00bb3333bbbb33bb3333333333bb3300cc00bb3333bbbb33bb333333bb3300cc
+0f777f0880999990c06660fff08888800677760ff08888800677760ff088888000bb3333bbbb33bb3333333333bb3300cc00bb3333bbbb33bb333333bb3300cc
+077770880900000ccc0005550800000cc00000550800000c077770550800000c00bb3333bbbb33bb333333333333bb00cc00bb3333bbbb33bb33333333bb00cc
+077f08888099990ccc0555555088880ccc0555555088880c077605555088880c00bb3333bbbb33bb333333333333bb00cc00bb3333bbbb33bb33333333bb00cc
+c0000888880000ccccc05555550000ccccc05555550000ccc0000555550000cc00000000000000000000000000000000cc00bb3333bbbb33bb333333bb3300cc
+cccc000000cccccccccc000000cccccccccc000000cccccccccc000000cccccc00000000000000000000000000000000cc00bb3333bbbb33bb333333bb3300cc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00bb3333bbbb33bb33333333bb00cccc00bb3333bbbb33bb33333333bb00cc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc00bb3333bbbb33bb33333333bb00cccc00bb3333bbbb33bb33333333bb00cc
 cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc00bb3333bbbb33bb33333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33333333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33333333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33bb3333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33bb3333333333bb3300cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00bb3333bbbb33bb333333333333bb00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000000000000000000000000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
