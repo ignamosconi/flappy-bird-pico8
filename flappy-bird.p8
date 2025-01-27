@@ -119,6 +119,44 @@ function add_points(pipe)
 	end
 end
 
+
+
+function check_collision(pipe)
+	--sI LA PARTE INFERIOR DE PLAYER
+	--ES MAYOR A LA PARTE SUPERIOR
+	--DE LA TAPA DE LA TUBERIA INF.
+	--SIGNIFICA QUE LA TRASPASO,
+	--ERGO HAY COLISION
+	
+	--nota: eSTO OCURRE ASI YA QUE
+	--EN PICO8, EL PISO ES Y = 128
+	--MIENTRAS QUE EL TECHO ES Y=0
+	
+	
+	--cOLLISION BOTTOM PIPE
+	if (player.ypos+13 > pipe.bottom.lid.y) --cOLISION CON EL TECHO DE PIPE.BOTTOM.LID
+				and	
+				( player.xpos+16  > pipe.bottom.lid.x ) --cOLISION CON EL LADO IZQ DE PIPE.BOTTOM.LID
+				and
+				(player.xpos+3    < pipe.bottom.lid.x + 32) --cOLISION CON EL LADO DER DE PIPE.BOTTOM.LID
+				then
+	
+			game_over = true	
+	end
+	
+	--cOLLISION TOP PIPE
+	if (player.ypos < pipe.top.lid.y+14) --cOLISION CON PARTE INFERIOR DE PIPE.TOP.LID.Y 
+				and	
+				( player.xpos+16  > pipe.top.lid.x ) --cOLISION CON PARTE IZQ DE PIPE.TOP.LID.X
+				and
+				(player.xpos+3    < pipe.top.lid.x + 32) --cOLISION CON PARTE DER DE PIPE.TOP.LID.X
+				then
+	
+			game_over = true	
+	end
+
+end
+
 function move_pipe(pipe)
 
 	--gENERAMOS UN NRO ALEATORIO
@@ -126,6 +164,9 @@ function move_pipe(pipe)
 	
 	--sUMAMOS 1 A POINTS
 	add_points(pipe)
+	
+	--cHEQUEAMOS COLISIONES
+	check_collision(pipe)
 	
 	
 	
@@ -697,7 +738,7 @@ function _draw()
 		
 	if inicio == true and game_over == true then
 			
-		--lOGICA PARA TERMINAR LA PARTIDA
+		--[[lOGICA PARA TERMINAR LA PARTIDA
 		cls(12)
 		print("")
 		print("")
@@ -720,7 +761,7 @@ function _draw()
 		
 		print("score:".. points)
 		print("rESTART WITH ⬅️ or ➡️")
-		
+		]]
 
 		
 
