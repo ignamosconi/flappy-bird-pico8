@@ -174,7 +174,9 @@ end
 
 function init_pipes()
 
-	--tUBERIA COMPLETA 1 
+	--tUBERIA COMPLETA 1
+	--random_1 = random_number(minimo, maximo)
+	 
 		pipe1 = {
 		
 			--eSPACIO ENTRE LAS MITADES
