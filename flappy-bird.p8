@@ -110,7 +110,12 @@ function random_number(minimo, maximo)
 	return num
 end
 
-function move_top_pipe(pipe)
+function move_pipe(pipe)
+	local num = random_number(0, 62)
+	
+	--[[
+	movimiento top
+	]]
 	
 	--mOVEMOS LA TAPA
 	pipe.top.lid.x -= 1
@@ -125,10 +130,10 @@ function move_top_pipe(pipe)
 	end
 	
 	
-	--lOOPEAMOS Y RNADOMIZAMOS 
-	--LAS TUBERIAS
+	--randomizacion y loop 
 	if pipe.top.lid.x < -35 then
 		pipe.top.lid.x = 127
+		pipe.top.lid.y = num
 		
 			--mOVEMOS LOS BODYS
 		for i = 1, 4 do
@@ -137,11 +142,14 @@ function move_top_pipe(pipe)
 			
 			--cICLAMOS CON AYUDA DE LA STR
 			p_top.x = 127
+			p_top.y = num-(16*i)
 		end
 	end
-end
-
-function move_bottom_pipe(pipe)
+	
+	
+	--[[
+	movimiento bottom
+	]]
 	
 	--mOVEMOS LA TAPA
 	pipe.bottom.lid.x -= 1
@@ -156,9 +164,10 @@ function move_bottom_pipe(pipe)
 	end
 	
 	
-	--LOOPEAMOS LAS TUBERIAS
+	--randomizacion y loop
 	if pipe.bottom.lid.x < -35 then
 		pipe.bottom.lid.x = 127
+		pipe.bottom.lid.y = num + pipe.space
 		
 			--mOVEMOS LOS BODYS
 		for i = 1, 4 do
@@ -167,8 +176,11 @@ function move_bottom_pipe(pipe)
 			
 			--cICLAMOS CON AYUDA DE LA STR
 			p_bottom.x = 127
+			p_bottom.y = num + (16 * i) + pipe.space
 		end
 	end
+	
+	
 end
 
 
@@ -178,13 +190,13 @@ function init_pipes()
 	--tUBERIA COMPLETA 1
 	
 	--eLEGIMOS UN NRO RANDOM ENTRE
-	--0 Y 64, QUE CORRESPONDE A LA
+	--0 Y 62, QUE CORRESPONDE A LA
 	--ALTURA MIN Y MAX DE LA PORCION
 	--TOP DE UNA PIPE. dESPUES, EN 
 	--BASE A ESTE NRO, SUMAMOS EL 
 	--ESPACIO ENTRE TUBERIAS Y OBT.
 	--LAS POSICIONES PARA EL BOTTOM
-	num = random_number(0, 64)
+	num = random_number(0, 62)
 	 
 		pipe1 = {
 		
@@ -546,7 +558,7 @@ function draw_pipe(pipe)
 
 
 	--top pipe
-	move_top_pipe(pipe)
+	move_pipe(pipe)
 	
 	spr(pipe.top.lid.sprite, 
 					pipe.top.lid.x,
@@ -573,9 +585,6 @@ function draw_pipe(pipe)
 	
 	
 	--bottom pipe
-	
-	move_bottom_pipe(pipe)
-	
 		spr(pipe.bottom.lid.sprite, 
 					pipe.bottom.lid.x,
 					pipe.bottom.lid.y, 
