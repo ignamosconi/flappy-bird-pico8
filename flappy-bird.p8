@@ -110,8 +110,22 @@ function random_number(minimo, maximo)
 	return num
 end
 
+function add_points(pipe)
+	--cALCULAMOS EL SCORE
+	if pipe.top.lid.x + 8 == player.xpos then
+		points += 1
+	end
+end
+
 function move_pipe(pipe)
+
+	--gENERAMOS UN NRO ALEATORIO
 	local num = random_number(0, 62)
+	
+	--sUMAMOS 1 A POINTS
+	add_points(pipe)
+	
+	
 	
 	--[[
 	movimiento top
@@ -478,6 +492,8 @@ function _init()
 		
 		]]
 		
+		points = 0
+		
 		selector_animacion = 1
 		animations = {
 			{2, 4, 2, 0},					--1 / aMARILLO
@@ -548,7 +564,12 @@ function _update60()
 		gravedad_flappy()
 		volar()
 	end
-
+	
+	if inicio == true and game_over == true then
+		if (btn(⬅️) or btn(➡️) or btn(❎) or btn(🅾️) or btn(⬆️) or btn(⬇️)) then
+    _init()
+  end
+	end
 
 end
 -->8
@@ -556,9 +577,13 @@ end
 
 function draw_pipe(pipe)
 
+	--mOVEMOS LA TUBERIA, 
+	--AUMENTAMOS LA SCORE
+	--CHEQUEAMOS COLISIONES
+	move_pipe(pipe)
 
 	--top pipe
-	move_pipe(pipe)
+	
 	
 	spr(pipe.top.lid.sprite, 
 					pipe.top.lid.x,
@@ -617,11 +642,36 @@ function _draw()
 		--aNIMACION IDLE
 		if inicio == false then
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
-			flap_animation()	
+			flap_animation()
+			
+			
+			color(15)
+			print("")
+			print("")
+			print("")
+			print("")
+			print("")
+			print("")
+			print("         p i c o  b i r d  ")	
+			print("")
+			print("")
+			print("")
+			print("")
+			print("")
+			print("")	
+			print("        fLY WITH ANY KEY")
+			print("   cHANGE SKINS WITH ⬅️ OR ➡️")
+			print("")	
+			print("")	
+			print("")
+			print("")	
+			print("")	
+			print("           iGNACIO 2025")
 		end
 		
 	
 		if inicio == true then
+		
 		
 			--dIBUJAMOS EL JUGADOR Y ANIMAMOS EL ALETEO CADA VEZ QUE SALTE
 			spr(player.sprite_actual, player.xpos, player.ypos, 2, 2)
@@ -631,6 +681,10 @@ function _draw()
 			draw_pipe(pipe1)
 			draw_pipe(pipe2)
 			
+			--mOSTRAMOS LA PUNTUACION
+			color(15)
+			print("@@@@@@@ < s c o r e: "..points.." > @@@@@@@")
+			
 			
 		end
 		
@@ -639,10 +693,36 @@ function _draw()
 		
 		
 	if inicio == true and game_over == true then
-		
+			
 		--lOGICA PARA TERMINAR LA PARTIDA
-		--print("g a m e  o v e r")
-		--stop()
+		cls()
+		print("")
+		print("")
+		print("")
+		print("")
+		print("")
+		print("g")
+		print("a")
+		print("m")
+		print("e")
+		print("")
+		print("o")
+		print("v")
+		print("e")
+		print("r")
+		print("")
+		print("")
+		print("")
+		print("")
+		print("")
+		
+		print("score:".. points)
+		print("fLY TO RESTART")
+		print("cHANGE SKINS WITH ⬅️ or ➡️")
+		
+
+		
+
 	end
 		
 	
