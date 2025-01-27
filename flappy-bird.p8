@@ -125,7 +125,8 @@ function move_top_pipe(pipe)
 	end
 	
 	
-	--lOOPEAMOS LAS TUBERIAS
+	--lOOPEAMOS Y RNADOMIZAMOS 
+	--LAS TUBERIAS
 	if pipe.top.lid.x < -35 then
 		pipe.top.lid.x = 127
 		
@@ -209,7 +210,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = num-16,
+						y = num-(16*1),
 						mirror = false,
 						flp = true
 					},
