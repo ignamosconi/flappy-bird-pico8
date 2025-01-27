@@ -106,7 +106,7 @@ end
 
 --eLEGIMOS UN NRO RANDOM PARA LA TUBERIA SUPERIOR
 function random_number(minimo, maximo)
-	num = flr(rnd(max - min + 1) + min)
+	num = flr(rnd(maximo - minimo + 1) + minimo)
 	return num
 end
 
@@ -175,12 +175,20 @@ end
 function init_pipes()
 
 	--tUBERIA COMPLETA 1
-	--random_1 = random_number(minimo, maximo)
+	
+	--eLEGIMOS UN NRO RANDOM ENTRE
+	--0 Y 64, QUE CORRESPONDE A LA
+	--ALTURA MIN Y MAX DE LA PORCION
+	--TOP DE UNA PIPE. dESPUES, EN 
+	--BASE A ESTE NRO, SUMAMOS EL 
+	--ESPACIO ENTRE TUBERIAS Y OBT.
+	--LAS POSICIONES PARA EL BOTTOM
+	num = random_number(0, 64)
 	 
 		pipe1 = {
 		
 			--eSPACIO ENTRE LAS MITADES
-			space = 50,
+			space = 52,
 			
 			--mITAD SUPERIOR COMPLETA
 			top = {
@@ -190,7 +198,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 64,
+						y = num,
 						mirror = false,
 						flp = true
 					},
@@ -201,7 +209,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 48,
+						y = num-16,
 						mirror = false,
 						flp = true
 					},
@@ -211,7 +219,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 32,
+						y = num-(16*2),
 						mirror = false,
 						flp = true
 					},
@@ -221,7 +229,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 16,
+						y = num-(16*3),
 						mirror = false,
 						flp = true
 					},
@@ -231,7 +239,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 0,
+						y = num-(16*4),
 						mirror = false,
 						flp = true
 					},
@@ -240,6 +248,11 @@ function init_pipes()
 			
 			
 			--mITAD INFERIOR
+			
+			--pARA UBICARLA, SUMAMOS EL
+			--ESPACIO DE SEPARACION AL 
+			--VALOR DE X Y SUMAMOS 16 PARA
+			--C/U DE LOS BODYES
 			bottom = {
 				
 					lid = {
@@ -247,7 +260,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 112,
+						y = num + space_init,
 						mirror = false,
 						flp = false
 					},
@@ -258,7 +271,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 128,
+						y = num + (16 * 1) + space_init,
 						mirror = false,
 						flp = false
 					},
@@ -268,7 +281,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 144,
+						y = num + (16 * 2) + space_init,
 						mirror = false,
 						flp = false
 					},
@@ -278,7 +291,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 160,
+						y = num + (16 * 3) + space_init,
 						mirror = false,
 						flp = false
 					},
@@ -288,7 +301,7 @@ function init_pipes()
 						w = 4,
 						h = 2,
 						x = 175,
-						y = 176,
+						y = num + (16 * 4) + space_init,
 						mirror = false,
 						flp = false
 					},
@@ -304,7 +317,7 @@ function init_pipes()
 		pipe2 = {
 		
 			--eSPACIO ENTRE LAS MITADES
-			space = 50,
+			space = 52,
 			
 			--mITAD SUPERIOR COMPLETA
 			top = {
@@ -486,7 +499,8 @@ function _init()
 		 
 		tuberias
 		
-		]]	
+		]]
+		space_init = 52
 		init_pipes()
 		
 		
@@ -586,7 +600,6 @@ end
 
 --dibujamos cosas segun lo que calculamos en update
 function _draw()
-
 	if game_over == false then
 
 		cls(background_color)
